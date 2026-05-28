@@ -1,0 +1,17 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"className":"ows-section","layout":{"type":"constrained","contentSize":"900px"}} -->
+<div class="wp-block-group ows-section">
+  <!-- wp:query-title {"type":"archive"} /-->
+  <!-- wp:query {"queryId":1,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":true}} -->
+  <div class="wp-block-query">
+    <!-- wp:post-template -->
+      <!-- wp:post-title {"isLink":true} /-->
+      <!-- wp:post-excerpt /-->
+    <!-- /wp:post-template -->
+  </div>
+  <!-- /wp:query -->
+</div>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

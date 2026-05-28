@@ -1,0 +1,43 @@
+.ows-booking__toolbar {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.ows-booking__toolbar button {
+  border-radius: 999px;
+  font-size: 0.85rem;
+  padding: 9px 14px;
+}
+
+.ows-booking__weekdays {
+  color: #6f8074;
+  display: grid;
+  font-size: 0.72rem;
+  font-weight: 800;
+  gap: 12px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  letter-spacing: 0.08em;
+  margin-top: 22px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.ows-booking__spacer {
+  display: block;
+}
+
+.ows-booking__selection,
+.ows-booking__notice {
+  color: #6f8074;
+  font-size: 0.95rem;
+}
+
+.ows-booking output {
+  color: #243b35;
+  display: block;
+  font-weight: 700;
+  min-height: 24px;
+}

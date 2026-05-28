@@ -1,0 +1,362 @@
+/*
+Theme Name: One Water West Stay
+Theme URI: https://onewaterweststay.local
+Author: One Water West Stay
+Description: High-end block theme for a furnished 3-month seasonal apartment rental in Kelowna, BC.
+Version: 0.1.0
+Requires at least: 6.4
+Tested up to: 6.5
+Requires PHP: 8.1
+Text Domain: onewaterweststay
+*/
+
+:root {
+  --ows-ink: #17201d;
+  --ows-forest: #243b35;
+  --ows-sage: #6f8074;
+  --ows-mist: #eef2ee;
+  --ows-cream: #fbf7ef;
+  --ows-bronze: #a87443;
+  --ows-gold: #d6b47c;
+  --ows-line: rgba(36, 59, 53, 0.16);
+  --ows-shadow: 0 24px 70px rgba(23, 32, 29, 0.14);
+}
+
+body {
+  background: var(--ows-cream);
+  color: var(--ows-ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+.ows-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.ows-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--ows-line);
+  background: rgba(251, 247, 239, 0.88);
+  backdrop-filter: blur(18px);
+}
+
+.ows-header__inner {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  min-height: 76px;
+}
+
+.ows-brand {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+
+.ows-nav {
+  display: flex;
+  gap: 24px;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.ows-nav a {
+  text-decoration: none;
+}
+
+.ows-button,
+.ows-booking button {
+  background: var(--ows-forest);
+  border: 1px solid var(--ows-forest);
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 700;
+  justify-content: center;
+  padding: 13px 22px;
+  text-decoration: none;
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.ows-button:hover,
+.ows-booking button:hover {
+  background: var(--ows-ink);
+  transform: translateY(-1px);
+}
+
+.ows-button--ghost {
+  background: transparent;
+  color: var(--ows-forest);
+}
+
+.ows-hero {
+  background:
+    linear-gradient(90deg, rgba(23, 32, 29, 0.78), rgba(23, 32, 29, 0.2)),
+    url("https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1800&q=86") center/cover;
+  color: #fff;
+  min-height: 760px;
+  position: relative;
+}
+
+.ows-hero__content {
+  max-width: 740px;
+  padding: 150px 0 96px;
+}
+
+.ows-kicker {
+  color: var(--ows-gold);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  margin-bottom: 18px;
+  text-transform: uppercase;
+}
+
+.ows-hero h1,
+.ows-section h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: -0.045em;
+  line-height: 0.96;
+}
+
+.ows-hero h1 {
+  font-size: clamp(3.5rem, 9vw, 7.6rem);
+  margin: 0 0 28px;
+}
+
+.ows-hero p {
+  font-size: 1.25rem;
+  line-height: 1.75;
+  max-width: 620px;
+}
+
+.ows-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 34px;
+}
+
+.ows-facts {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: -62px;
+  position: relative;
+  z-index: 2;
+}
+
+.ows-fact {
+  background: #fff;
+  border: 1px solid var(--ows-line);
+  padding: 28px;
+}
+
+.ows-fact strong {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.ows-fact span {
+  color: var(--ows-sage);
+  display: block;
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  margin-top: 10px;
+  text-transform: uppercase;
+}
+
+.ows-section {
+  padding: 92px 0;
+}
+
+.ows-section h2 {
+  font-size: clamp(2.4rem, 5vw, 4.8rem);
+  margin: 0 0 24px;
+}
+
+.ows-lede {
+  color: var(--ows-sage);
+  font-size: 1.15rem;
+  line-height: 1.8;
+  max-width: 760px;
+}
+
+.ows-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 42px;
+}
+
+.ows-card {
+  background: #fff;
+  border: 1px solid var(--ows-line);
+  border-radius: 28px;
+  box-shadow: 0 16px 45px rgba(23, 32, 29, 0.07);
+  padding: 30px;
+}
+
+.ows-card h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.65rem;
+  margin: 0 0 12px;
+}
+
+.ows-card p,
+.ows-card li {
+  color: #536059;
+  line-height: 1.7;
+}
+
+.ows-gallery {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 1.5fr 1fr;
+  margin-top: 42px;
+}
+
+.ows-gallery img {
+  border-radius: 28px;
+  height: 100%;
+  min-height: 280px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.ows-gallery__stack {
+  display: grid;
+  gap: 18px;
+}
+
+.ows-booking-layout {
+  align-items: start;
+  display: grid;
+  gap: 32px;
+  grid-template-columns: 1.2fr 0.8fr;
+}
+
+.ows-booking,
+.ows-admin-panel {
+  background: #fff;
+  border: 1px solid var(--ows-line);
+  border-radius: 32px;
+  box-shadow: var(--ows-shadow);
+  padding: 30px;
+}
+
+.ows-booking__calendar {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  margin: 22px 0;
+}
+
+.ows-booking__day {
+  aspect-ratio: 1;
+  background: var(--ows-mist);
+  border: 1px solid transparent;
+  border-radius: 16px;
+  color: var(--ows-ink);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.ows-booking__day[disabled] {
+  background: #f3e5df;
+  color: #a77b70;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.ows-booking__day.is-selected {
+  background: var(--ows-forest);
+  color: #fff;
+}
+
+.ows-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.ows-form label {
+  color: var(--ows-sage);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ows-form input,
+.ows-form textarea,
+.ows-form select {
+  border: 1px solid var(--ows-line);
+  border-radius: 14px;
+  color: var(--ows-ink);
+  font: inherit;
+  padding: 14px 16px;
+  width: 100%;
+}
+
+.ows-pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.ows-pill-list span {
+  background: rgba(168, 116, 67, 0.11);
+  border: 1px solid rgba(168, 116, 67, 0.24);
+  border-radius: 999px;
+  color: #70512e;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 9px 13px;
+}
+
+.ows-footer {
+  background: var(--ows-ink);
+  color: #fff;
+  padding: 56px 0;
+}
+
+.ows-footer p {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+@media (max-width: 900px) {
+  .ows-nav {
+    display: none;
+  }
+
+  .ows-facts,
+  .ows-grid,
+  .ows-gallery,
+  .ows-booking-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .ows-hero {
+    min-height: auto;
+  }
+
+  .ows-hero__content {
+    padding: 100px 0 130px;
+  }
+}
