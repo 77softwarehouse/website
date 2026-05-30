@@ -30,6 +30,13 @@ High-end WordPress website foundation for a furnished 3-month seasonal apartment
 8. Place `[onewater_booking_calendar]` on the Availability & Booking page.
 9. Use Stripe test keys and staging-safe email settings only until production launch.
 
+## Booking Availability Rules
+
+- Every stay is an exact 3-month term: the renter picks a start date and checkout is calculated automatically 3 months later.
+- Once a reservation is both **confirmed** and fully **paid**, it reserves up to **90 days per calendar year**.
+- For stays that cross into a new year, only the days that fall within a given year count toward that year's 90-day limit, so a cross-year booking does not block both years entirely.
+- Because an exact 3-month quarter can run slightly longer than 90 days, the first confirmed-and-paid stay in an otherwise-open year is always allowed (90 days, or the full 3 months otherwise). Additional bookings are then blocked once a year reaches its limit.
+
 ## Important Production Notes
 
 This repo intentionally does not include WordPress core, uploads, database dumps, secrets, plugin license keys, or third-party paid plugins. MotoPress should be installed and licensed directly in the target WordPress environment.

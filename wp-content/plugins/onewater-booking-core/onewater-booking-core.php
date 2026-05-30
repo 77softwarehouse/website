@@ -19,6 +19,7 @@ final class OneWater_Booking_Core
     private const RESERVATION_TYPE = 'ows_reservation';
     private const BLOCK_TYPE = 'ows_block';
     private const API_NAMESPACE = 'onewater/v1';
+    private const ANNUAL_DAY_LIMIT = 90;
 
     public static function boot(): void
     {
@@ -517,6 +518,19 @@ final class OneWater_Booking_Core
             }
         }
 
+        // Annual cap: confirmed and fully paid stays reserve up to ANNUAL_DAY_LIMIT
+        // days per calendar year. A cross-year stay only counts its in-year days,
+        // so the requested period is blocked only for the year(s) it would push
+        // past the limit. (The first stay of an otherwise-empty year is always
+        // allowed, since an exact 3-month quarter can run slightly over 90 days.)
+        $booked_per_year = self::confirmed_paid_days_per_year();
+        foreach (self::days_per_year($start, $checkout) as $year => $requested_days) {
+            $existing = $booked_per_year[$year] ?? 0;
+            if ($existing > 0 && ($existing + $requested_days) > self::ANNUAL_DAY_LIMIT) {
+                return ['available' => false, 'reason' => 'annual_limit'];
+            }
+        }
+
         return ['available' => true, 'reason' => null];
     }
 
@@ -552,6 +566,53 @@ final class OneWater_Booking_Core
         }
 
         return $ranges;
+    }
+
+    /**
+     * Days from a confirmed and fully paid reservation that fall within each
+     * calendar year, e.g. ['2026' => 61, '2027' => 31]. Counts occupied nights
+     * (start inclusive, checkout exclusive) so a cross-year stay only attributes
+     * its in-year days to each year's annual limit.
+     */
+    private static function days_per_year(DateTimeImmutable $start, DateTimeImmutable $checkout): array
+    {
+        $counts = [];
+        $cursor = $start;
+        while ($cursor < $checkout) {
+            $year = $cursor->format('Y');
+            $counts[$year] = ($counts[$year] ?? 0) + 1;
+            $cursor = $cursor->modify('+1 day');
+        }
+
+        return $counts;
+    }
+
+    private static function confirmed_paid_days_per_year(): array
+    {
+        $totals = [];
+        $posts = get_posts([
+            'post_type' => self::RESERVATION_TYPE,
+            'post_status' => 'publish',
+            'numberposts' => -1,
+            'meta_query' => [
+                ['key' => '_ows_status', 'value' => 'confirmed'],
+                ['key' => '_ows_payment_status', 'value' => 'paid'],
+            ],
+        ]);
+
+        foreach ($posts as $post) {
+            $start = self::parse_date((string) get_post_meta($post->ID, '_ows_start_date', true));
+            $end = self::parse_date((string) get_post_meta($post->ID, '_ows_end_date', true));
+            if (!$start || !$end) {
+                continue;
+            }
+
+            foreach (self::days_per_year($start, $end) as $year => $days) {
+                $totals[$year] = ($totals[$year] ?? 0) + $days;
+            }
+        }
+
+        return $totals;
     }
 
     private static function reservation_payload(int $id): array
