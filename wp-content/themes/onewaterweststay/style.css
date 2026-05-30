@@ -243,6 +243,163 @@ a {
   gap: 18px;
 }
 
+.ows-page-intro {
+  padding-bottom: 24px;
+}
+
+.ows-page-intro .ows-kicker {
+  margin-bottom: 18px;
+}
+
+.ows-page-intro .wp-block-post-title:not(.ows-kicker) {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.4rem, 5vw, 4.8rem);
+  letter-spacing: -0.045em;
+  line-height: 0.96;
+  margin: 0 0 24px;
+}
+
+.ows-page-intro .wp-block-post-content {
+  /* max-width: 760px; */
+}
+
+.ows-page-intro .wp-block-post-content p {
+  color: var(--ows-sage);
+  font-size: 1.15rem;
+  line-height: 1.8;
+}
+
+.ows-page-intro .wp-block-post-content :where(h2, h3, h4) {
+  color: var(--ows-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.5em;
+}
+
+.ows-gallery-intro {
+  padding-bottom: 24px;
+}
+
+.ows-gallery-note {
+  color: var(--ows-bronze);
+  font-size: 0.92rem;
+  font-style: italic;
+  margin-top: 18px;
+}
+
+.ows-gallery-section {
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+.ows-gallery-heading {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  letter-spacing: -0.02em;
+  margin: 0 0 24px;
+}
+
+.ows-gallery-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.ows-gallery-item {
+  border-radius: 24px;
+  cursor: pointer;
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.ows-gallery-item--wide {
+  grid-column: span 2;
+}
+
+.ows-gallery-item img {
+  aspect-ratio: 4 / 3;
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 320ms ease;
+  width: 100%;
+}
+
+.ows-gallery-item:hover img,
+.ows-gallery-item:focus-visible img {
+  transform: scale(1.04);
+}
+
+.ows-gallery-item:focus-visible {
+  outline: 3px solid var(--ows-bronze);
+  outline-offset: 3px;
+}
+
+.ows-gallery-item figcaption {
+  background: linear-gradient(0deg, rgba(23, 32, 29, 0.82), rgba(23, 32, 29, 0));
+  bottom: 0;
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 600;
+  left: 0;
+  padding: 38px 18px 16px;
+  position: absolute;
+  right: 0;
+}
+
+.ows-gallery-cta {
+  text-align: center;
+}
+
+.ows-gallery-cta .ows-hero__actions {
+  justify-content: center;
+}
+
+.ows-lightbox {
+  align-items: center;
+  background: rgba(17, 24, 21, 0.92);
+  display: flex;
+  flex-direction: column;
+  inset: 0;
+  justify-content: center;
+  padding: 40px;
+  position: fixed;
+  z-index: 100;
+}
+
+.ows-lightbox[hidden] {
+  display: none;
+}
+
+.ows-lightbox__img {
+  border-radius: 16px;
+  box-shadow: var(--ows-shadow);
+  max-height: 82vh;
+  max-width: 92vw;
+  object-fit: contain;
+}
+
+.ows-lightbox__caption {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 1rem;
+  margin-top: 18px;
+  max-width: 720px;
+  text-align: center;
+}
+
+.ows-lightbox__close {
+  background: transparent;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  font-size: 2.6rem;
+  line-height: 1;
+  position: absolute;
+  right: 28px;
+  top: 18px;
+}
+
 .ows-booking-layout {
   align-items: start;
   display: grid;
@@ -350,6 +507,14 @@ a {
   .ows-gallery,
   .ows-booking-layout {
     grid-template-columns: 1fr;
+  }
+
+  .ows-gallery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ows-gallery-item--wide {
+    grid-column: span 1;
   }
 
   .ows-hero {

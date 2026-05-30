@@ -26,7 +26,7 @@ High-end WordPress website foundation for a furnished 3-month seasonal apartment
 4. Activate the `One Water West Stay` theme.
 5. Activate the `One Water Booking Core` plugin.
 6. Visit `Settings > Permalinks` and save once to refresh rewrite rules.
-7. Add pages for Home, Apartment, Availability & Booking, Seasons, Rates, Location, FAQ, and Contact.
+7. Add pages for Home, Apartment, Availability & Booking, Seasons, Rates, Location, FAQ, and Contact. Use the slug `apartment` for the Apartment page so the `page-apartment` template renders the page content with the built-in photo gallery.
 8. Place `[onewater_booking_calendar]` on the Availability & Booking page.
 9. Use Stripe test keys and staging-safe email settings only until production launch.
 

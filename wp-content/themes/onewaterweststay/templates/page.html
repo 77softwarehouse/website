@@ -1,10 +1,16 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-<!-- wp:group {"className":"ows-section","layout":{"type":"constrained","contentSize":"900px"}} -->
-<div class="wp-block-group ows-section">
-  <!-- wp:post-title {"level":1} /-->
-  <!-- wp:post-content /-->
-</div>
+<!-- wp:group {"tagName":"section","className":"ows-section ows-page-intro","layout":{"type":"default"}} -->
+<section class="wp-block-group ows-section ows-page-intro">
+  <!-- wp:group {"className":"ows-shell","layout":{"type":"default"}} -->
+  <div class="wp-block-group ows-shell">
+    <!-- wp:paragraph {"className":"ows-kicker"} -->
+    <!-- wp:post-title {"level":3,"className":"ows-kicker"} /-->
+    <!-- /wp:paragraph -->
+    <!-- wp:post-content /-->
+  </div>
+  <!-- /wp:group -->
+</section>
 <!-- /wp:group -->
 
 <!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

@@ -20,6 +20,10 @@ Use these sections when creating WordPress pages.
 - Large lake-view balcony with outdoor kitchen.
 - 369 sq. ft. patio, parking stall, storage locker.
 - Room details from the reference listing.
+- Photo gallery: use the page slug `apartment` so the theme's `page-apartment` template renders the editable page content followed by the gallery.
+  - Section groups: Living & Dining, Bedrooms & Workspace, Balcony & Outdoor Kitchen, and Resort-Style Amenities.
+  - Each photo opens in a lightbox viewer; captions describe the space.
+  - Images are representative placeholders. Replace with final owned/licensed apartment photography before launch (see Phase 8 in the QA checklist).
 
 ## Availability & Booking
 

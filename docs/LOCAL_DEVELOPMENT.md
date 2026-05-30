@@ -19,7 +19,7 @@
 5. Save permalinks once.
 6. Create the main pages:
    - Home
-   - Apartment
+   - Apartment (use slug `apartment`; the `page-apartment` template adds the photo gallery)
    - Availability & Booking
    - Seasons
    - Rates

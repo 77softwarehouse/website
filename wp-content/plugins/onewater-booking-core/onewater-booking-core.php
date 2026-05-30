@@ -346,7 +346,6 @@ final class OneWater_Booking_Core
         ?>
         <section class="ows-booking" data-onewater-booking>
             <p class="ows-kicker">Request-to-book</p>
-            <h2>Exact 3-month availability</h2>
             <p>Select any available start date. The checkout date is calculated exactly 3 months later.</p>
             <div class="ows-booking__toolbar">
                 <button type="button" data-calendar-prev aria-label="Previous month">Previous</button>

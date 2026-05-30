@@ -23,6 +23,9 @@
 - Apartment facts are visible.
 - Amenities section includes both pools, hot tub, pickleball, BBQs, firepits, gym, pilates machines, Peloton mirror, cardio stations, event room, and office space.
 - Availability CTA links to the booking page.
+- Apartment page (slug `apartment`) renders the `page-apartment` template with editable content followed by the photo gallery section groups.
+- Gallery photos open in the lightbox viewer and close via the close button, backdrop click, or Escape key.
+- Gallery grid collapses to a single column on mobile.
 - Footer explains request-to-book and lease/payment requirements.
 
 ## Phase 3: Calendar Rules
