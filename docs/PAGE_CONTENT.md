@@ -31,6 +31,12 @@ Add:
 
 Explain that the renter selects a start date, the system calculates checkout exactly 3 months later, and the stay is not final until manager approval, payment/deposit, and BC lease signature are complete.
 
+Paragraph:
+
+```text
+Booking is simple: choose your preferred start date on the calendar and we'll automatically set your checkout date exactly three months later—every stay at One Water West is a fixed three-month term. Submitting a date is a request to book, not a confirmed reservation. Your stay becomes final only after our property manager reviews and approves your request, your payment and deposit are received, and your British Columbia residential tenancy lease is signed. Until all three steps are complete, the dates remain open to other guests, so we recommend completing each step promptly to secure your stay.
+```
+
 ## Seasons
 
 - Winter: quiet waterfront living, gym, hot tub, work-from-home comfort.
