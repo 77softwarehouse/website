@@ -315,7 +315,7 @@ final class OneWater_Booking_Core
             'onewater-booking-calendar',
             plugins_url('assets/booking-calendar.js', __FILE__),
             [],
-            '0.1.0',
+            '0.3.4',
             true
         );
 
@@ -323,7 +323,7 @@ final class OneWater_Booking_Core
             'onewater-booking-calendar',
             plugins_url('assets/booking-calendar.css', __FILE__),
             [],
-            '0.1.0'
+            '0.3.1'
         );
     }
 
@@ -348,14 +348,11 @@ final class OneWater_Booking_Core
             <p class="ows-kicker">Request-to-book</p>
             <p>Select any available start date. The checkout date is calculated exactly 3 months later.</p>
             <div class="ows-booking__toolbar">
-                <button type="button" data-calendar-prev aria-label="Previous month">Previous</button>
+                <button type="button" data-calendar-prev aria-label="Previous months">Previous</button>
                 <strong data-calendar-label></strong>
-                <button type="button" data-calendar-next aria-label="Next month">Next</button>
+                <button type="button" data-calendar-next aria-label="Next months">Next</button>
             </div>
-            <div class="ows-booking__weekdays" aria-hidden="true">
-                <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
-            </div>
-            <div class="ows-booking__calendar" data-calendar-grid></div>
+            <div class="ows-booking__months" data-calendar-months></div>
             <p data-calendar-selection class="ows-booking__selection">Choose a start date to see the exact 3-month period.</p>
             <form class="ows-form" data-booking-form>
                 <input type="hidden" name="start_date" data-start-date>

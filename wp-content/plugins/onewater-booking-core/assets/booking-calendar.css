@@ -25,6 +25,94 @@
   text-transform: uppercase;
 }
 
+.ows-booking__months {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 22px;
+}
+
+.ows-booking__month-title {
+  color: #243b35;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.ows-booking__months .ows-booking__weekdays {
+  font-size: 0.58rem;
+  gap: 4px;
+  letter-spacing: 0.04em;
+  margin-top: 10px;
+}
+
+.ows-booking__months .ows-booking__calendar {
+  gap: 4px;
+  margin: 8px 0 0;
+}
+
+.ows-booking__months .ows-booking__day {
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* Selected 3-month stay range states (override normal + disabled day styling). */
+.ows-booking .ows-booking__day.is-in-range,
+.ows-booking .ows-booking__day.is-range-start,
+.ows-booking .ows-booking__day.is-range-end {
+  background: var(--ows-mist, #eef2ee);
+  border-color: transparent;
+  color: var(--ows-ink, #17201d);
+  cursor: pointer;
+  opacity: 1;
+  position: relative;
+}
+
+/* Directional markers: triangle as tall as the button, a third of its width. */
+.ows-booking .ows-booking__day.is-range-start::after,
+.ows-booking .ows-booking__day.is-range-end::after {
+  background: var(--ows-forest, #243b35);
+  content: "";
+  height: 100%;
+  position: absolute;
+  top: 0;
+  width: 33.333%;
+}
+
+.ows-booking .ows-booking__day.is-range-start::after {
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  left: 0;
+}
+
+.ows-booking .ows-booking__day.is-range-end::after {
+  clip-path: polygon(100% 0, 0 50%, 100% 100%);
+  right: 0;
+}
+
+@media (max-width: 720px) {
+  .ows-booking__months {
+    gap: 24px;
+    grid-template-columns: 1fr;
+  }
+
+  .ows-booking__months .ows-booking__weekdays {
+    font-size: 0.72rem;
+    gap: 12px;
+  }
+
+  .ows-booking__months .ows-booking__calendar {
+    gap: 12px;
+  }
+
+  .ows-booking__months .ows-booking__day {
+    border-radius: 16px;
+    font-size: 1rem;
+  }
+}
+
 .ows-booking__spacer {
   display: block;
 }
