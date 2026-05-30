@@ -329,6 +329,10 @@ final class OneWater_Booking_Core
 
     public static function render_booking_calendar(): string
     {
+        // Block themes render `the_content` before `wp_enqueue_scripts` fires, so the
+        // handles may not be registered yet. Register here to ensure localize succeeds.
+        self::register_assets();
+
         wp_enqueue_script('onewater-booking-calendar');
         wp_enqueue_style('onewater-booking-calendar');
 
