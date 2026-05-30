@@ -1,7 +1,8 @@
-<!-- wp:group {"className":"ows-header","layout":{"type":"constrained"}} -->
+<!-- wp:group {"className":"ows-header","layout":{"type":"default"}} -->
 <div class="wp-block-group ows-header">
-  <!-- wp:html -->
-  <div class="ows-shell ows-header__inner">
+  <!-- wp:group {"className":"ows-shell ows-header__inner","layout":{"type":"default"}} -->
+  <div class="wp-block-group ows-shell ows-header__inner">
+    <!-- wp:html -->
     <a class="ows-brand" href="/">One Water West Stay</a>
     <nav class="ows-nav" aria-label="Primary navigation">
       <a href="/apartment">The Apartment</a>
@@ -10,8 +11,9 @@
       <a href="/location">Location</a>
       <a href="/faq">FAQ</a>
     </nav>
-    <a class="ows-button" href="/availability-booking">Book Now</a>
+    <!-- /wp:html -->
+    <!-- wp:shortcode -->[onewater_auth_nav]<!-- /wp:shortcode -->
   </div>
-  <!-- /wp:html -->
+  <!-- /wp:group -->
 </div>
 <!-- /wp:group -->

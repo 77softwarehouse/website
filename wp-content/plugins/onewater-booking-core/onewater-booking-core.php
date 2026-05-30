@@ -32,6 +32,10 @@ final class OneWater_Booking_Core
         add_action('rest_api_init', [self::class, 'register_rest_routes']);
         add_action('wp_enqueue_scripts', [self::class, 'register_assets']);
         add_shortcode('onewater_booking_calendar', [self::class, 'render_booking_calendar']);
+        add_shortcode('onewater_my_bookings', [self::class, 'render_my_bookings']);
+        add_shortcode('onewater_auth_nav', [self::class, 'render_auth_nav']);
+        add_action('wp_login', [self::class, 'backfill_user_reservations'], 10, 2);
+        add_filter('option_users_can_register', [self::class, 'allow_self_service_registration']);
         register_activation_hook(__FILE__, [self::class, 'activate']);
     }
 
@@ -303,6 +307,24 @@ final class OneWater_Booking_Core
             'callback' => [self::class, 'rest_get_reservation'],
         ]);
 
+        register_rest_route(self::API_NAMESPACE, '/my-reservations', [
+            'methods' => WP_REST_Server::READABLE,
+            'permission_callback' => [self::class, 'require_logged_in'],
+            'callback' => [self::class, 'rest_my_reservations'],
+        ]);
+
+        register_rest_route(self::API_NAMESPACE, '/reservations/(?P<id>\d+)', [
+            'methods' => 'PATCH',
+            'permission_callback' => [self::class, 'require_logged_in'],
+            'callback' => [self::class, 'rest_update_reservation'],
+        ]);
+
+        register_rest_route(self::API_NAMESPACE, '/reservations/(?P<id>\d+)/cancel', [
+            'methods' => WP_REST_Server::CREATABLE,
+            'permission_callback' => [self::class, 'require_logged_in'],
+            'callback' => [self::class, 'rest_cancel_reservation'],
+        ]);
+
         register_rest_route(self::API_NAMESPACE, '/chat-handoff', [
             'methods' => WP_REST_Server::CREATABLE,
             'permission_callback' => '__return_true',
@@ -316,7 +338,7 @@ final class OneWater_Booking_Core
             'onewater-booking-calendar',
             plugins_url('assets/booking-calendar.js', __FILE__),
             [],
-            '0.3.4',
+            '0.3.5',
             true
         );
 
@@ -325,6 +347,21 @@ final class OneWater_Booking_Core
             plugins_url('assets/booking-calendar.css', __FILE__),
             [],
             '0.3.1'
+        );
+
+        wp_register_script(
+            'onewater-my-bookings',
+            plugins_url('assets/my-bookings.js', __FILE__),
+            [],
+            '0.1.0',
+            true
+        );
+
+        wp_register_style(
+            'onewater-my-bookings',
+            plugins_url('assets/my-bookings.css', __FILE__),
+            [],
+            '0.1.0'
         );
     }
 
@@ -368,6 +405,90 @@ final class OneWater_Booking_Core
         </section>
         <?php
         return (string) ob_get_clean();
+    }
+
+    public static function render_my_bookings(): string
+    {
+        self::register_assets();
+
+        if (!is_user_logged_in()) {
+            return self::render_login_panel();
+        }
+
+        wp_enqueue_script('onewater-my-bookings');
+        wp_enqueue_style('onewater-my-bookings');
+
+        wp_localize_script('onewater-my-bookings', 'oneWaterMyBookings', [
+            'apiBase' => esc_url_raw(rest_url(self::API_NAMESPACE)),
+            'nonce' => wp_create_nonce('wp_rest'),
+            'minimumNoticeDays' => (int) self::settings()['minimum_notice_days'],
+            'bookingUrl' => esc_url_raw(home_url('/availability-booking')),
+        ]);
+
+        $current_user = wp_get_current_user();
+
+        ob_start();
+        ?>
+        <section class="ows-bookings" data-onewater-my-bookings>
+            <div class="ows-bookings__header">
+                <div>
+                    <p class="ows-kicker">Your reservations</p>
+                    <p class="ows-bookings__greeting">Signed in as <?php echo esc_html($current_user->user_email ?: $current_user->display_name); ?></p>
+                </div>
+                <a class="ows-button ows-button--ghost" href="<?php echo esc_url(wp_logout_url(home_url('/'))); ?>">Log out</a>
+            </div>
+            <div data-bookings-list class="ows-bookings__list">Loading your reservations...</div>
+            <p data-bookings-empty class="ows-bookings__empty" hidden>You have no reservations yet. <a href="<?php echo esc_url(home_url('/availability-booking')); ?>">Start a booking</a>.</p>
+            <p class="ows-bookings__notice">Changes and cancellations are reviewed by a manager. Confirmed or paid stays must be changed by contacting us directly.</p>
+        </section>
+        <?php
+        return (string) ob_get_clean();
+    }
+
+    private static function render_login_panel(): string
+    {
+        $redirect = get_permalink() ?: home_url('/my-bookings');
+
+        ob_start();
+        ?>
+        <section class="ows-login">
+            <p class="ows-kicker">Sign in</p>
+            <h2 class="ows-login__title">Access your booking</h2>
+            <p class="ows-login__lede">Sign in to review, change, or cancel your reservation.</p>
+            <div class="ows-login__providers">
+                <?php
+                // Social buttons (Google, Facebook) when Nextend Social Login is active.
+                if (shortcode_exists('nextend_social_login')) {
+                    echo do_shortcode('[nextend_social_login]');
+                }
+                // Email magic-link form when a passwordless plugin is active.
+                if (shortcode_exists('passwordless-login')) {
+                    echo do_shortcode('[passwordless-login]');
+                }
+                ?>
+            </div>
+            <p class="ows-login__fallback">
+                <a class="ows-button" href="<?php echo esc_url(wp_login_url($redirect)); ?>">Sign in with email and password</a>
+            </p>
+        </section>
+        <?php
+        return (string) ob_get_clean();
+    }
+
+    public static function render_auth_nav(): string
+    {
+        $book = '<a class="ows-button" href="' . esc_url(home_url('/availability-booking')) . '">Book Now</a>';
+
+        if (is_user_logged_in()) {
+            $links = '<a class="ows-header__link" href="' . esc_url(home_url('/my-bookings')) . '">My Bookings</a>'
+                . '<a class="ows-header__link" href="' . esc_url(wp_logout_url(home_url('/'))) . '">Log out</a>'
+                . $book;
+        } else {
+            $links = '<a class="ows-header__link" href="' . esc_url(wp_login_url(home_url('/my-bookings'))) . '">Log in</a>'
+                . $book;
+        }
+
+        return '<div class="ows-header__actions">' . $links . '</div>';
     }
 
     public static function rest_availability(WP_REST_Request $request): WP_REST_Response
@@ -444,6 +565,11 @@ final class OneWater_Booking_Core
         update_post_meta($reservation_id, '_ows_lease_status', 'required');
         update_post_meta($reservation_id, '_ows_message', $message);
 
+        // Link the reservation to the signed-in guest so it appears in My Bookings.
+        if (is_user_logged_in()) {
+            update_post_meta($reservation_id, '_ows_user_id', get_current_user_id());
+        }
+
         self::notify_manager($reservation_id);
 
         return new WP_REST_Response([
@@ -463,6 +589,70 @@ final class OneWater_Booking_Core
         return new WP_REST_Response(self::reservation_payload($id));
     }
 
+    public static function rest_my_reservations(WP_REST_Request $request): WP_REST_Response
+    {
+        $ids = self::reservations_for_user(wp_get_current_user());
+        $reservations = array_map([self::class, 'reservation_payload'], $ids);
+
+        usort($reservations, static function (array $a, array $b): int {
+            return strcmp((string) $a['start_date'], (string) $b['start_date']);
+        });
+
+        return new WP_REST_Response(['reservations' => array_values($reservations)]);
+    }
+
+    public static function rest_update_reservation(WP_REST_Request $request): WP_REST_Response
+    {
+        $id = absint($request['id']);
+        $guard = self::guard_owned_reservation($id, wp_get_current_user());
+        if ($guard instanceof WP_REST_Response) {
+            return $guard;
+        }
+
+        $status = (string) get_post_meta($id, '_ows_status', true);
+        if (!self::is_reservation_modifiable($status)) {
+            return new WP_REST_Response([
+                'message' => 'This reservation can no longer be changed online. Please contact the manager.',
+            ], 409);
+        }
+
+        $start = self::parse_date((string) $request->get_param('start_date'));
+        if (!$start) {
+            return new WP_REST_Response(['message' => 'A valid start_date is required.'], 400);
+        }
+
+        $checkout = self::checkout_for_start($start);
+        $availability = self::is_period_available($start, $checkout, $id);
+        if (!$availability['available']) {
+            return new WP_REST_Response([
+                'message' => 'Selected 3-month period is not available.',
+                'reason' => $availability['reason'],
+            ], 409);
+        }
+
+        update_post_meta($id, '_ows_start_date', $start->format('Y-m-d'));
+        update_post_meta($id, '_ows_end_date', $checkout->format('Y-m-d'));
+        self::notify_manager_change($id, 'modified');
+
+        return new WP_REST_Response(self::reservation_payload($id));
+    }
+
+    public static function rest_cancel_reservation(WP_REST_Request $request): WP_REST_Response
+    {
+        $id = absint($request['id']);
+        $guard = self::guard_owned_reservation($id, wp_get_current_user());
+        if ($guard instanceof WP_REST_Response) {
+            return $guard;
+        }
+
+        if ((string) get_post_meta($id, '_ows_status', true) !== 'cancelled') {
+            update_post_meta($id, '_ows_status', 'cancelled');
+            self::notify_manager_change($id, 'cancelled');
+        }
+
+        return new WP_REST_Response(self::reservation_payload($id));
+    }
+
     public static function rest_chat_handoff(WP_REST_Request $request): WP_REST_Response
     {
         return new WP_REST_Response([
@@ -476,9 +666,53 @@ final class OneWater_Booking_Core
         ]);
     }
 
-    public static function can_read_reservation(): bool
+    public static function can_read_reservation(WP_REST_Request $request): bool
     {
-        return current_user_can('edit_posts');
+        if (current_user_can('edit_posts')) {
+            return true;
+        }
+
+        if (!is_user_logged_in()) {
+            return false;
+        }
+
+        return self::user_owns_reservation(absint($request['id']), wp_get_current_user());
+    }
+
+    public static function require_logged_in(): bool
+    {
+        return is_user_logged_in();
+    }
+
+    /**
+     * Keep public WordPress registration disabled (Settings > General) while
+     * still letting the guest login flows create accounts. We only force
+     * users_can_register on during a recognized social-login or magic-link
+     * callback request, so the generic wp-login.php?action=register form stays
+     * closed to spam.
+     */
+    public static function allow_self_service_registration($value)
+    {
+        if (self::is_self_service_login_request()) {
+            return '1';
+        }
+
+        return $value;
+    }
+
+    private static function is_self_service_login_request(): bool
+    {
+        // Nextend Social Login routes its provider callback through ?loginSocial=...
+        if (!empty($_REQUEST['loginSocial'])) {
+            return true;
+        }
+
+        // Cozmoslabs Passwordless Login confirms a magic link via these params.
+        if (!empty($_REQUEST['passwordless_token']) || !empty($_GET['login_via_phone'])) {
+            return true;
+        }
+
+        return false;
     }
 
     private static function settings(): array
@@ -503,7 +737,7 @@ final class OneWater_Booking_Core
         return $start->modify('+3 months');
     }
 
-    private static function is_period_available(DateTimeImmutable $start, DateTimeImmutable $checkout): array
+    private static function is_period_available(DateTimeImmutable $start, DateTimeImmutable $checkout, int $ignore_id = 0): array
     {
         $settings = self::settings();
         $notice_date = (new DateTimeImmutable('today', wp_timezone()))->modify('+' . absint($settings['minimum_notice_days']) . ' days');
@@ -512,7 +746,7 @@ final class OneWater_Booking_Core
             return ['available' => false, 'reason' => 'minimum_notice'];
         }
 
-        foreach (self::occupied_ranges() as $range) {
+        foreach (self::occupied_ranges($ignore_id) as $range) {
             if (self::ranges_overlap($start, $checkout, $range['start'], $range['end'])) {
                 return ['available' => false, 'reason' => $range['type']];
             }
@@ -539,7 +773,7 @@ final class OneWater_Booking_Core
         return $start_a < $end_b && $start_b < $end_a;
     }
 
-    private static function occupied_ranges(): array
+    private static function occupied_ranges(int $ignore_id = 0): array
     {
         $ranges = [];
         $posts = get_posts([
@@ -549,6 +783,10 @@ final class OneWater_Booking_Core
         ]);
 
         foreach ($posts as $post) {
+            if ($ignore_id && (int) $post->ID === $ignore_id) {
+                continue;
+            }
+
             $status = get_post_meta($post->ID, '_ows_status', true);
             if ($post->post_type === self::RESERVATION_TYPE && in_array($status, ['cancelled'], true)) {
                 continue;
@@ -617,19 +855,29 @@ final class OneWater_Booking_Core
 
     private static function reservation_payload(int $id): array
     {
+        $status = (string) get_post_meta($id, '_ows_status', true);
+        $statuses = self::reservation_statuses();
+
         return [
             'id' => $id,
-            'status' => get_post_meta($id, '_ows_status', true),
+            'status' => $status,
+            'status_label' => $statuses[$status] ?? ($status ?: 'pending_request'),
             'payment_status' => get_post_meta($id, '_ows_payment_status', true),
             'lease_status' => get_post_meta($id, '_ows_lease_status', true),
             'start_date' => get_post_meta($id, '_ows_start_date', true),
             'checkout_date' => get_post_meta($id, '_ows_end_date', true),
+            'modifiable' => self::is_reservation_modifiable($status),
             'renter' => [
                 'name' => get_post_meta($id, '_ows_renter_name', true),
                 'email' => get_post_meta($id, '_ows_renter_email', true),
                 'phone' => get_post_meta($id, '_ows_renter_phone', true),
             ],
         ];
+    }
+
+    private static function is_reservation_modifiable(string $status): bool
+    {
+        return in_array($status, ['pending_request', 'pending_payment'], true);
     }
 
     private static function notify_manager(int $reservation_id): void
@@ -644,6 +892,105 @@ final class OneWater_Booking_Core
             'New One Water West Stay booking request',
             'A new 3-month booking request is ready for manager review. Reservation ID: ' . $reservation_id
         );
+    }
+
+    private static function notify_manager_change(int $reservation_id, string $action): void
+    {
+        $admin_email = get_option('admin_email');
+        if (!$admin_email) {
+            return;
+        }
+
+        $subject = $action === 'cancelled'
+            ? 'One Water West Stay booking cancelled by guest'
+            : 'One Water West Stay booking changed by guest';
+
+        wp_mail(
+            $admin_email,
+            $subject,
+            sprintf('Reservation ID %d was %s by the guest. Please review.', $reservation_id, $action)
+        );
+    }
+
+    /**
+     * On login, claim any reservations made with this account's email address
+     * so pre-account bookings show up in My Bookings.
+     */
+    public static function backfill_user_reservations(string $user_login, WP_User $user): void
+    {
+        if (!$user->user_email) {
+            return;
+        }
+
+        $ids = get_posts([
+            'post_type' => self::RESERVATION_TYPE,
+            'post_status' => 'publish',
+            'numberposts' => -1,
+            'fields' => 'ids',
+            'meta_query' => [
+                'relation' => 'AND',
+                ['key' => '_ows_renter_email', 'value' => $user->user_email],
+                ['key' => '_ows_user_id', 'compare' => 'NOT EXISTS'],
+            ],
+        ]);
+
+        foreach ($ids as $id) {
+            update_post_meta((int) $id, '_ows_user_id', $user->ID);
+        }
+    }
+
+    private static function reservations_for_user(WP_User $user): array
+    {
+        if (!$user->ID) {
+            return [];
+        }
+
+        $by_id = get_posts([
+            'post_type' => self::RESERVATION_TYPE,
+            'post_status' => 'publish',
+            'numberposts' => -1,
+            'fields' => 'ids',
+            'meta_query' => [['key' => '_ows_user_id', 'value' => (string) $user->ID]],
+        ]);
+
+        $by_email = $user->user_email ? get_posts([
+            'post_type' => self::RESERVATION_TYPE,
+            'post_status' => 'publish',
+            'numberposts' => -1,
+            'fields' => 'ids',
+            'meta_query' => [['key' => '_ows_renter_email', 'value' => $user->user_email]],
+        ]) : [];
+
+        return array_values(array_unique(array_map('intval', array_merge($by_id, $by_email))));
+    }
+
+    private static function user_owns_reservation(int $reservation_id, WP_User $user): bool
+    {
+        if (!$user->ID || get_post_type($reservation_id) !== self::RESERVATION_TYPE) {
+            return false;
+        }
+
+        $owner_id = (int) get_post_meta($reservation_id, '_ows_user_id', true);
+        if ($owner_id && $owner_id === (int) $user->ID) {
+            return true;
+        }
+
+        $email = (string) get_post_meta($reservation_id, '_ows_renter_email', true);
+
+        return $email && $user->user_email && strcasecmp($email, $user->user_email) === 0;
+    }
+
+    private static function guard_owned_reservation(int $reservation_id, WP_User $user)
+    {
+        if (get_post_type($reservation_id) !== self::RESERVATION_TYPE) {
+            return new WP_REST_Response(['message' => 'Reservation not found.'], 404);
+        }
+
+        if (!self::user_owns_reservation($reservation_id, $user)) {
+            return new WP_REST_Response(['message' => 'You do not have access to this reservation.'], 403);
+        }
+
+        return null;
     }
 }
 

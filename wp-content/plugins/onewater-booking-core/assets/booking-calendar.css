@@ -129,3 +129,11 @@
   font-weight: 700;
   min-height: 24px;
 }
+
+.ows-booking__mybookings-link {
+  color: #a87443;
+  display: inline-block;
+  font-weight: 700;
+  margin-top: 6px;
+  text-decoration: underline;
+}

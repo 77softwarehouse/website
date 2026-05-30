@@ -58,6 +58,20 @@ a {
   border-radius: 999px;
 }
 
+.ows-header__actions {
+  align-items: center;
+  display: flex;
+  gap: 20px;
+}
+
+.ows-header__link {
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 .ows-brand {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 1.25rem;

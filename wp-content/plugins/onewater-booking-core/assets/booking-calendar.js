@@ -180,7 +180,16 @@
         });
         const payload = await response.json();
         if (!response.ok) throw new Error(payload.message || 'Booking request failed.');
-        result.textContent = payload.message;
+        result.innerHTML = '';
+        const message = document.createElement('span');
+        message.textContent = payload.message;
+        result.appendChild(message);
+        const link = document.createElement('a');
+        link.href = '/my-bookings';
+        link.className = 'ows-booking__mybookings-link';
+        link.textContent = 'View in My Bookings';
+        result.appendChild(document.createElement('br'));
+        result.appendChild(link);
         form.reset();
         selectedRange = null;
         selection.textContent = 'Choose a start date to see the exact 3-month period.';
